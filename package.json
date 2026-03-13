@@ -1,0 +1,12 @@
+{
+  "name": "cinemax",
+  "version": "1.0.0",
+  "description": "CineMax - Premium Streaming Platform",
+  "main": "index.html",
+  "scripts": {
+    "vercel-build": "echo 'No build required'"
+  },
+  "keywords": ["streaming", "movies", "tv-shows", "cinema"],
+  "author": "",
+  "license": "MIT"
+}

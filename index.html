@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>CineMax - Premium Streaming</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <base href="/">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loader"></div>
+        <h2 class="loading-title">CineMax</h2>
+        <p class="loading-text">Experience cinema like never before</p>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-play-circle"></i>
+                <span>CineMax</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#home" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#movies" class="nav-link">
+                    <i class="fas fa-film"></i>
+                    <span>Movies</span>
+                </a>
+                <a href="#tvshows" class="nav-link">
+                    <i class="fas fa-tv"></i>
+                    <span>TV Shows</span>
+                </a>
+                <a href="#ai-recommendations" class="nav-link">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Picks</span>
+                </a>
+                <a href="#wishlist" class="nav-link" id="wishlistBtn">
+                    <i class="fas fa-heart"></i>
+                    <span>Wishlist</span>
+                    <span class="wishlist-badge">0</span>
+                </a>
+            </nav>
+
+            <div class="header-right">
+                <div class="search-wrapper">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Search movies, shows..." autocomplete="off">
+                        <button class="search-clear" id="searchClear">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="searchResults" class="search-results"></div>
+                    <div id="searchSuggestions" class="search-suggestions"></div>
+                </div>
+                
+                <button class="mobile-search-trigger" id="mobileSearchBtn">
+                    <i class="fas fa-search"></i>
+                </button>
+                
+                <button class="mobile-menu-trigger" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav" id="mobileNav">
+            <a href="#home" class="mobile-nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#movies" class="mobile-nav-item">
+                <i class="fas fa-film"></i>
+                <span>Movies</span>
+            </a>
+            <a href="#tvshows" class="mobile-nav-item">
+                <i class="fas fa-tv"></i>
+                <span>TV Shows</span>
+            </a>
+            <a href="#ai-recommendations" class="mobile-nav-item">
+                <i class="fas fa-robot"></i>
+                <span>AI Picks</span>
+            </a>
+            <a href="#wishlist" class="mobile-nav-item">
+                <i class="fas fa-heart"></i>
+                <span>Wishlist</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Genre Filter -->
+    <div class="genre-filter">
+        <div class="genre-list">
+            <span class="genre-item active" data-genre="all">All</span>
+            <span class="genre-item" data-genre="action">Action</span>
+            <span class="genre-item" data-genre="adventure">Adventure</span>
+            <span class="genre-item" data-genre="animation">Animation</span>
+            <span class="genre-item" data-genre="comedy">Comedy</span>
+            <span class="genre-item" data-genre="crime">Crime</span>
+            <span class="genre-item" data-genre="documentary">Documentary</span>
+            <span class="genre-item" data-genre="drama">Drama</span>
+            <span class="genre-item" data-genre="family">Family</span>
+            <span class="genre-item" data-genre="fantasy">Fantasy</span>
+            <span class="genre-item" data-genre="history">History</span>
+            <span class="genre-item" data-genre="horror">Horror</span>
+            <span class="genre-item" data-genre="music">Music</span>
+            <span class="genre-item" data-genre="mystery">Mystery</span>
+            <span class="genre-item" data-genre="romance">Romance</span>
+            <span class="genre-item" data-genre="sci-fi">Sci-Fi</span>
+            <span class="genre-item" data-genre="thriller">Thriller</span>
+            <span class="genre-item" data-genre="war">War</span>
+            <span class="genre-item" data-genre="western">Western</span>
+        </div>
+    </div>
+
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero" id="heroBanner">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <span class="hero-badge">FEATURED</span>
+                <h1 class="hero-title" id="heroTitle">Welcome to CineMax</h1>
+                <p class="hero-description" id="heroDesc">Discover thousands of movies and TV shows from around the world</p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" id="watchNowHero">
+                        <i class="fas fa-play"></i>
+                        Watch Now
+                    </button>
+                    <button class="btn btn-secondary" id="watchTrailerHero">
+                        <i class="fas fa-film"></i>
+                        Trailer
+                    </button>
+                    <button class="btn btn-outline" id="wishlistHero">
+                        <i class="fas fa-heart"></i>
+                        Wishlist
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Continue Watching -->
+        <section class="section" id="continueWatchingSection" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-history"></i>
+                    Continue Watching
+                </h2>
+            </div>
+            <div class="slider" id="continueWatchingSlider"></div>
+        </section>
+
+        <!-- Trending Movies -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-fire"></i>
+                    Trending Movies
+                </h2>
+                <a href="#" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="slider" id="trendingSlider"></div>
+        </section>
+
+        <!-- Trending TV Shows -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-tv"></i>
+                    Trending TV Shows
+                </h2>
+                <a href="#" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="slider" id="trendingTVSlider"></div>
+        </section>
+
+        <!-- Popular Web Series -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-globe"></i>
+                    Popular Web Series
+                </h2>
+                <a href="#" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="slider" id="webSeriesSlider"></div>
+        </section>
+
+        <!-- AI Recommendations -->
+        <section class="section" id="aiRecommendationsSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-robot"></i>
+                    AI Recommendations For You
+                </h2>
+                <a href="#" class="section-link">Refresh <i class="fas fa-sync-alt"></i></a>
+            </div>
+            <div class="slider" id="aiRecommendationsSlider"></div>
+        </section>
+
+        <!-- All Content -->
+        <section class="section" id="allMoviesSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-compass"></i>
+                    Browse All Content
+                </h2>
+                <div class="section-tabs">
+                    <button class="tab-btn active" id="movieTab">Movies</button>
+                    <button class="tab-btn" id="tvTab">TV Shows</button>
+                </div>
+            </div>
+            
+            <div class="content-grid" id="movieGrid"></div>
+            <div class="content-grid" id="tvGrid" style="display: none;"></div>
+            
+            <div class="loading-container" id="loadingSpinner">
+                <div class="spinner"></div>
+            </div>
+            <div class="loading-container" id="tvLoadingSpinner">
+                <div class="spinner"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="logo">
+                    <i class="fas fa-play-circle"></i>
+                    <span>CineMax</span>
+                </div>
+                <p>Your ultimate destination for premium entertainment. Stream thousands of movies and TV shows in stunning quality.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-group">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Movies</a></li>
+                        <li><a href="#">TV Shows</a></li>
+                        <li><a href="#">New & Popular</a></li>
+                    </ul>
+                </div>
+                <div class="footer-group">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-group">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">DMCA</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 CineMax. All rights reserved. Made with <i class="fas fa-heart" style="color: var(--primary);"></i> for movie lovers</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal" id="movieModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <button class="modal-close" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-content" id="modalBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="trailerModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container modal-lg">
+            <button class="modal-close" id="closeTrailerModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-content trailer-container" id="trailerContainer"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="videoPlayerModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container modal-xl">
+            <button class="modal-close" id="closeVideoModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-content" id="videoContainer"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="wishlistModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <button class="modal-close" id="closeWishlistModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-content">
+                <h2 class="modal-title">My Wishlist</h2>
+                <div class="wishlist-grid" id="wishlistGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/app.js"></script>
+    <script src="/ui.js"></script>
+</body>
+</html>
