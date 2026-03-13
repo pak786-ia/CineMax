@@ -11,7 +11,6 @@ let currentMovieId = null;
 let currentVideoTime = 0;
 let videoPlayer = null;
 let searchTimeout = null;
-let backendAvailable = false;
 let searchSuggestionTimeout = null;
 let currentAudio = null;
 let touchStartY = 0;
@@ -36,7 +35,6 @@ const APP_CONFIG = {
     TMDB_API_KEY: '3fd2be6f0c70a2a598f084ddfb75487c',
     TMDB_BASE_URL: 'https://api.themoviedb.org/3',
     TMDB_IMAGE_BASE: 'https://image.tmdb.org/t/p/',
-    BACKEND_URL: 'http://localhost:3005',
     POSTER_SIZES: {
         small: 'w185',
         medium: 'w342',
@@ -44,7 +42,7 @@ const APP_CONFIG = {
         original: 'original'
     },
     CACHE_DURATION: 3600000,
-    NEW_CONTENT_DAYS: 7, // Days to keep "New" badge
+    NEW_CONTENT_DAYS: 7,
     STORAGE_KEYS: {
         WISHLIST: 'cinemax_wishlist',
         CONTINUE_WATCHING: 'cinemax_continue_watching',
@@ -92,14 +90,12 @@ const newContentManager = {
             }
         }
         
-        // Run cleanup every hour
         setInterval(() => this.cleanup(), 3600000);
     },
     
     add: function(contentId, type, releaseDate) {
         const id = `${type}_${contentId}`;
         
-        // Check if content is new (within 7 days)
         if (releaseDate) {
             const release = new Date(releaseDate);
             const now = new Date();
@@ -145,10 +141,8 @@ const newContentManager = {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', async () => {
-    // Show loading screen
     const loadingScreen = document.getElementById('loadingScreen');
     
-    // Initialize new content manager
     newContentManager.init();
     
     await initializeApp();
@@ -162,22 +156,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupMediaTypeToggle();
     setupMobileSearch();
     setupMobileTouchPrevention();
-    
-    // Start auto-update checker
     setupAutoUpdate();
     
-    // Hide loading screen after everything is loaded
     setTimeout(() => {
         if (loadingScreen) loadingScreen.classList.add('hide');
     }, 1500);
 });
 
-// Auto-update function - checks for new content every 30 minutes
 function setupAutoUpdate() {
-    // Check immediately
     checkForNewContent();
-    
-    // Then check every 30 minutes
     setInterval(checkForNewContent, 30 * 60 * 1000);
 }
 
@@ -185,7 +172,6 @@ async function checkForNewContent() {
     try {
         console.log('Checking for new content...');
         
-        // Check new movies
         const moviesResponse = await fetch(
             `${APP_CONFIG.TMDB_BASE_URL}/movie/now_playing?api_key=${APP_CONFIG.TMDB_API_KEY}&language=en-US&page=1`
         );
@@ -197,7 +183,6 @@ async function checkForNewContent() {
             });
         }
         
-        // Check new TV shows
         const tvResponse = await fetch(
             `${APP_CONFIG.TMDB_BASE_URL}/tv/on_the_air?api_key=${APP_CONFIG.TMDB_API_KEY}&language=en-US&page=1`
         );
@@ -209,7 +194,6 @@ async function checkForNewContent() {
             });
         }
         
-        // Refresh displays to show new badges
         refreshContentDisplays();
         
         showNotification('New content added! Check out the "New" badges.', 'success');
@@ -219,13 +203,11 @@ async function checkForNewContent() {
 }
 
 function refreshContentDisplays() {
-    // Refresh trending sections
     loadTrendingMovies();
     loadTrendingTVShows();
     loadPopularWebSeries();
     loadAIRecommendations();
     
-    // Refresh all movies and TV shows if they're visible
     if (currentMediaType === 'movie') {
         currentPage = 1;
         hasMore = true;
@@ -239,7 +221,6 @@ function refreshContentDisplays() {
     }
 }
 
-// Setup mobile touch prevention to avoid accidental clicks while scrolling
 function setupMobileTouchPrevention() {
     const isMobile = window.innerWidth <= 768;
     if (!isMobile) return;
@@ -282,10 +263,8 @@ function setupMobileTouchPrevention() {
     }, true);
 }
 
-// Initialize app
 async function initializeApp() {
     try {
-        await checkBackendConnection();
         await loadFeaturedContent();
         await loadTrendingMovies();
         await loadTrendingTVShows();
@@ -299,7 +278,6 @@ async function initializeApp() {
     }
 }
 
-// Setup mobile search with improved visibility
 function setupMobileSearch() {
     const mobileSearchBtn = document.getElementById('mobileSearchBtn');
     const searchInput = document.getElementById('searchInput');
@@ -319,11 +297,9 @@ function setupMobileSearch() {
             if (searchContainer.classList.contains('active')) {
                 searchInput.focus();
                 
-                // Adjust position for better visibility
                 setTimeout(() => {
                     searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
-                    // Ensure search results are visible
                     if (searchResults) {
                         searchResults.style.maxHeight = '60vh';
                         searchResults.style.zIndex = '9999';
@@ -346,7 +322,6 @@ function setupMobileSearch() {
                 setTimeout(() => {
                     searchInput.focus();
                     
-                    // Adjust position for better visibility
                     searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
                     if (searchResults) {
@@ -363,8 +338,7 @@ function setupMobileSearch() {
     }
     
     if (searchInput) {
-        // Improve input visibility
-        searchInput.style.fontSize = '16px'; // Prevents zoom on iOS
+        searchInput.style.fontSize = '16px';
         searchInput.style.color = '#ffffff';
         searchInput.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
         
@@ -382,13 +356,11 @@ function setupMobileSearch() {
             e.stopPropagation();
         });
         
-        // Ensure input text is visible
         searchInput.addEventListener('input', function() {
             this.style.color = '#ffffff';
         });
     }
     
-    // Close search when tapping outside with improved handling
     document.addEventListener('click', (e) => {
         const searchContainer = document.querySelector('.search-container');
         const mobileSearchBtn = document.getElementById('mobileSearchBtn');
@@ -399,7 +371,6 @@ function setupMobileSearch() {
             if (!searchContainer.contains(e.target) && !mobileSearchBtn.contains(e.target)) {
                 searchContainer.classList.remove('active');
                 
-                // Hide results but keep them accessible
                 if (searchResults) {
                     searchResults.style.display = 'none';
                 }
@@ -431,7 +402,6 @@ function setupMobileSearch() {
     });
 }
 
-// Setup media type toggle
 function setupMediaTypeToggle() {
     const movieTab = document.getElementById('movieTab');
     const tvTab = document.getElementById('tvTab');
@@ -475,40 +445,8 @@ function setupMediaTypeToggle() {
     }
 }
 
-// Check backend connection
-async function checkBackendConnection() {
-    try {
-        const possiblePorts = [3005, 3000, 3001, 3002, 3003, 3004];
-        
-        for (const port of possiblePorts) {
-            try {
-                const url = `${window.location.protocol}//${window.location.hostname}:${port}/health`;
-                const response = await fetch(url, { 
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' },
-                    signal: AbortSignal.timeout(2000)
-                });
-                
-                if (response.ok) {
-                    APP_CONFIG.BACKEND_URL = `${window.location.protocol}//${window.location.hostname}:${port}`;
-                    backendAvailable = true;
-                    console.log(`✅ Backend connected successfully on port ${port}`);
-                    return;
-                }
-            } catch (e) {
-                // Try next port
-            }
-        }
-        
-        console.warn('⚠️ Backend not available. Using free streaming sources.');
-        backendAvailable = false;
-    } catch (error) {
-        console.warn('⚠️ Backend not available. Using free streaming sources.');
-        backendAvailable = false;
-    }
-}
+// Removed checkBackendConnection function - not needed for production
 
-// Load featured content
 async function loadFeaturedContent() {
     try {
         const isMovie = Math.random() > 0.5;
@@ -541,7 +479,6 @@ async function loadFeaturedContent() {
     }
 }
 
-// Update hero banner
 function updateHeroBanner(item, type) {
     const heroBanner = document.getElementById('heroBanner');
     const heroTitle = document.getElementById('heroTitle');
@@ -564,7 +501,6 @@ function updateHeroBanner(item, type) {
     heroBanner.dataset.contentData = JSON.stringify(item);
 }
 
-// Load trending movies
 async function loadTrendingMovies() {
     try {
         const response = await fetch(
@@ -579,7 +515,6 @@ async function loadTrendingMovies() {
     }
 }
 
-// Load trending TV shows
 async function loadTrendingTVShows() {
     try {
         const response = await fetch(
@@ -594,7 +529,6 @@ async function loadTrendingTVShows() {
     }
 }
 
-// Load popular web series
 async function loadPopularWebSeries() {
     try {
         const response = await fetch(
@@ -609,7 +543,6 @@ async function loadPopularWebSeries() {
     }
 }
 
-// Load AI recommendations
 async function loadAIRecommendations() {
     try {
         const history = getWatchHistory();
@@ -643,7 +576,6 @@ async function loadAIRecommendations() {
     }
 }
 
-// Load all movies
 async function loadAllMovies(reset = false) {
     if (isLoading || !hasMore) return;
     
@@ -694,7 +626,6 @@ async function loadAllMovies(reset = false) {
     }
 }
 
-// Load all TV shows
 async function loadAllTVShows(reset = false) {
     if (isLoading || !hasMore) return;
     
@@ -743,7 +674,6 @@ async function loadAllTVShows(reset = false) {
     }
 }
 
-// Display movies in slider with proper event listeners
 function displayMoviesInSlider(items, containerId, type = 'movie') {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -753,10 +683,8 @@ function displayMoviesInSlider(items, containerId, type = 'movie') {
         return;
     }
     
-    // Clear container first
     container.innerHTML = '';
     
-    // Create and append each card individually
     items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'movie-card';
@@ -764,7 +692,6 @@ function displayMoviesInSlider(items, containerId, type = 'movie') {
         card.dataset.contentType = type;
         card.dataset.releaseDate = item.release_date || item.first_air_date || '';
         
-        // Check if content is new
         const isNew = newContentManager.check(item.id, type);
         
         card.innerHTML = createContentCard(item, type, isNew);
@@ -815,7 +742,6 @@ function displayMoviesInSlider(items, containerId, type = 'movie') {
     });
 }
 
-// Display movies in grid with touch prevention
 function displayMoviesInGrid(items, gridId, type = 'movie') {
     const grid = document.getElementById(gridId);
     if (!grid || !items || items.length === 0) return;
@@ -827,7 +753,6 @@ function displayMoviesInGrid(items, gridId, type = 'movie') {
         card.dataset.contentType = type;
         card.dataset.releaseDate = item.release_date || item.first_air_date || '';
         
-        // Check if content is new
         const isNew = newContentManager.check(item.id, type);
         
         card.innerHTML = createContentCard(item, type, isNew);
@@ -873,7 +798,6 @@ function displayMoviesInGrid(items, gridId, type = 'movie') {
     });
 }
 
-// Create content card HTML with "New" badge
 function createContentCard(item, type = 'movie', isNew = false) {
     const title = item.title || item.name || 'Unknown';
     const posterPath = item.poster_path 
@@ -899,7 +823,6 @@ function createContentCard(item, type = 'movie', isNew = false) {
     `;
 }
 
-// Show content details with episode selector for TV shows
 async function showContentDetails(contentId, type = 'movie') {
     try {
         const endpoint = type === 'movie' ? 'movie' : 'tv';
@@ -925,11 +848,9 @@ async function showContentDetails(contentId, type = 'movie') {
         const typeIcon = type === 'movie' ? '🎬 Movie' : '📺 TV Series';
         const seasons = content.seasons || [];
         
-        // Check if content is new
         const isNew = newContentManager.check(contentId, type);
         const newBadge = isNew ? '<span class="new-badge-large">NEW RELEASE</span>' : '';
         
-        // Create episode selector HTML for TV shows
         let episodeSelectorHTML = '';
         if (type === 'tv' && seasons.length > 0) {
             episodeSelectorHTML = `
@@ -1074,7 +995,6 @@ async function showContentDetails(contentId, type = 'movie') {
     }
 }
 
-// Setup episode selector
 function setupEpisodeSelector(contentId, type) {
     const seasonSelect = document.getElementById('seasonSelect');
     const episodeSelect = document.getElementById('episodeSelect');
@@ -1184,7 +1104,6 @@ function setupEpisodeSelector(contentId, type) {
     }
 }
 
-// Function to get ALL 6 video sources for movies
 function getRealMovieSource(movieId, title, year) {
     return [
         `https://vidsrc.to/embed/movie/${movieId}`,
@@ -1196,7 +1115,6 @@ function getRealMovieSource(movieId, title, year) {
     ];
 }
 
-// Function to get ALL 6 video sources for TV shows
 function getRealTVSource(tvId, season = 1, episode = 1) {
     return [
         `https://vidsrc.to/embed/tv/${tvId}/${season}/${episode}`,
@@ -1208,7 +1126,6 @@ function getRealTVSource(tvId, season = 1, episode = 1) {
     ];
 }
 
-// Show welcome message on video player
 function showWelcomeMessage(container) {
     const isMobile = window.innerWidth <= 768;
     
@@ -1285,7 +1202,6 @@ function showWelcomeMessage(container) {
     }, 10000);
 }
 
-// Check if iframe loaded successfully
 function setupIframeErrorHandling(iframe, sources, container) {
     let currentSourceIndex = 0;
     let retryCount = 0;
@@ -1484,7 +1400,6 @@ function setupIframeErrorHandling(iframe, sources, container) {
     updateStatus(0, `🔄 Connecting to Server 1...`);
 }
 
-// Play content
 async function playContent(contentId, type = 'movie', season = 1, episode = 1) {
     try {
         if (currentAudio) {
@@ -1586,7 +1501,6 @@ async function playContent(contentId, type = 'movie', season = 1, episode = 1) {
     }
 }
 
-// Close video player
 function closeVideoPlayer() {
     const modal = document.getElementById('videoPlayerModal');
     if (modal) {
@@ -1620,8 +1534,7 @@ function closeVideoPlayer() {
     document.body.style.overflow = '';
 }
 
-// Try alternative source
-async function tryAlternativeSource(contentId, type = 'movie', season = 1, episode = 1) {
+function tryAlternativeSource(contentId, type = 'movie', season = 1, episode = 1) {
     const videoContainer = document.getElementById('videoContainer');
     if (!videoContainer) return;
     
@@ -1687,7 +1600,6 @@ async function tryAlternativeSource(contentId, type = 'movie', season = 1, episo
     setupIframeErrorHandling(altVideoIframe, sources, videoContainer);
 }
 
-// Setup video player controls
 function setupVideoPlayerControls() {
     const style = document.createElement('style');
     style.textContent = `
@@ -1709,7 +1621,6 @@ function setupVideoPlayerControls() {
             border: none;
         }
         
-        /* New badge styles */
         .new-badge {
             position: absolute;
             top: 10px;
@@ -1744,7 +1655,6 @@ function setupVideoPlayerControls() {
             letter-spacing: 0.5px;
         }
         
-        /* Improved mobile search styles */
         @media (max-width: 768px) {
             .search-container {
                 position: fixed;
@@ -1949,7 +1859,6 @@ function setupVideoPlayerControls() {
     document.head.appendChild(style);
 }
 
-// Play trailer
 function playTrailer(trailerKey) {
     if (currentAudio) {
         currentAudio.pause();
@@ -1987,7 +1896,6 @@ function playTrailer(trailerKey) {
     }
 }
 
-// Close trailer
 function closeTrailer() {
     const modal = document.getElementById('trailerModal');
     if (modal) {
@@ -2002,7 +1910,6 @@ function closeTrailer() {
     document.body.style.overflow = '';
 }
 
-// Setup search autocomplete
 function setupSearchAutocomplete() {
     const searchInput = document.getElementById('searchInput');
     if (!searchInput) return;
@@ -2063,7 +1970,6 @@ function setupSearchAutocomplete() {
     });
 }
 
-// Show search suggestions
 function showSearchSuggestions(items, query) {
     let suggestionsContainer = document.getElementById('searchSuggestions');
     
@@ -2144,7 +2050,6 @@ function showSearchSuggestions(items, query) {
     suggestionsContainer.style.zIndex = '9999';
 }
 
-// Hide search suggestions
 function hideSearchSuggestions() {
     const suggestions = document.getElementById('searchSuggestions');
     if (suggestions) {
@@ -2152,7 +2057,6 @@ function hideSearchSuggestions() {
     }
 }
 
-// Wishlist functions
 function toggleWishlist(id, title, poster, type = 'movie') {
     let wishlist = getWishlist();
     const index = wishlist.findIndex(item => item.id == id && item.type === type);
@@ -2287,7 +2191,6 @@ function showWishlist() {
     if (modal) modal.classList.add('show');
 }
 
-// Continue watching functions
 function saveProgress(contentId, timestamp, duration, type = 'movie') {
     if (timestamp < 10 || timestamp > duration - 10) return;
     
@@ -2417,7 +2320,6 @@ function loadContinueWatching() {
     }
 }
 
-// Watch history
 function addToWatchHistory(contentId, type = 'movie') {
     let history = getWatchHistory();
     
@@ -2441,7 +2343,6 @@ function getWatchHistory() {
     return JSON.parse(localStorage.getItem(APP_CONFIG.STORAGE_KEYS.WATCH_HISTORY) || '[]');
 }
 
-// Search function
 function setupSearch() {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
@@ -2547,7 +2448,6 @@ function setupSearch() {
     });
 }
 
-// Show notification
 function showNotification(message, type = 'info') {
     const existing = document.querySelector('.notification');
     if (existing) existing.remove();
@@ -2591,7 +2491,6 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Infinite scroll
 function setupInfiniteScroll() {
     window.addEventListener('scroll', () => {
         const scrollPosition = window.innerHeight + window.scrollY;
@@ -2609,7 +2508,6 @@ function setupInfiniteScroll() {
     });
 }
 
-// Filter by genre
 function filterByGenre(genre) {
     currentGenre = genre;
     currentPage = 1;
@@ -2635,7 +2533,6 @@ function filterByGenre(genre) {
     }
 }
 
-// Setup navigation
 function setupNavigation() {
     document.querySelectorAll('.nav-link, .mobile-nav-item').forEach(link => {
         link.addEventListener('click', (e) => {
@@ -2718,7 +2615,6 @@ function setupNavigation() {
     });
 }
 
-// Setup event listeners
 function setupEventListeners() {
     const closeModal = document.getElementById('closeModal');
     if (closeModal) {
@@ -2939,7 +2835,6 @@ function setupEventListeners() {
     });
 }
 
-// Add additional styles
 const style = document.createElement('style');
 style.textContent = `
     .notification {
@@ -3119,7 +3014,6 @@ style.textContent = `
 
 document.head.appendChild(style);
 
-// Make functions globally available
 window.showContentDetails = showContentDetails;
 window.playContent = playContent;
 window.playTrailer = playTrailer;
