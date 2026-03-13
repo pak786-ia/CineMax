@@ -5,47 +5,29 @@
   "installCommand": null,
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "src": "style.css",
+      "dest": "style.css"
+    },
+    {
+      "src": "app.js",
+      "dest": "app.js"
+    },
+    {
+      "src": "ui.js",
+      "dest": "ui.js"
+    },
+    {
+      "src": "(.*)",
+      "dest": "index.html"
     }
   ],
   "headers": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/app.js",
+      "source": "(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=86400, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/style.css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400, immutable"
+          "value": "public, max-age=3600"
         }
       ]
     }
